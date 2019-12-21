@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+.rank1 {
+    margin: 1px 5px;
+    border: 1px dashed black;
+    cursor: pointer;
+}
+.ranktitle {
+    background-color: springgreen;
+    margin-top: 5px;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .2s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.outer-container,.content {
+    width: 200px; height: 200px;
+}
+.outer-container {
+    position: relative;
+    overflow: hidden;
+}
+.inner-container {
+    position: absolute; left: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+ 
+ /* for Chrome */
+.inner-container::-webkit-scrollbar {
+    display: none;
+}
+.my-wrapper {
+    width: 200px; height: 200px; 
+}
+</style>
+
+<body>
+    <div id="app">
+        <div class="my-wrapper" @mouseenter="mouseenter" @mouseleave="mouseleave">
+            <div>专家数量10/20</div>
+            <div class="outer-container">
+                    <div class="inner-container">
+                       <div class="content">
+                            <transition name="fade">
+                                <div v-show="showAll">
+                                    <div class="rank1" v-for="item in list">
+                                        <div class="ranktitle" @click="showDetail(item)">{{item.category}}</div>
+                                        <transition name="fade">
+                                            <div v-if="item.show">
+                                                <div v-for="it in item.children">
+                                                    {{it.name}}
+                                                </div>
+                                            </div>
+                                        </transition>
+                                    </div>
+                                </div>
+                            </transition>
+                       </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                list: [
+                    {
+                        category: "T1",
+                        count: 3,
+                        children: [
+                            {
+                                name: '小明'
+                            },
+                            {
+                                name: '里斯'
+                            },
+                            {
+                                name: '维他命'
+                            },
+                        ]
+                    },
+                    {
+                        category: "T1",
+                        count: 3,
+                        children: [
+                            {
+                                name: '小明'
+                            },
+                            {
+                                name: '里斯'
+                            },
+                            {
+                                name: '维他命'
+                            },
+                        ]
+                    },
+                    {
+                        category: "T1",
+                        count: 3,
+                        children: [
+                            {
+                                name: '小明'
+                            },
+                            {
+                                name: '里斯'
+                            },
+                            {
+                                name: '维他命'
+                            },
+                        ]
+                    },
+                    {
+                        category: "T1",
+                        count: 3,
+                        children: [
+                            {
+                                name: '小明'
+                            },
+                            {
+                                name: '里斯'
+                            },
+                            {
+                                name: '维他命'
+                            },
+                        ]
+                    },
+                    {
+                        category: "T1",
+                        count: 3,
+                        children: [
+                            {
+                                name: '小明'
+                            },
+                            {
+                                name: '里斯'
+                            },
+                            {
+                                name: '维他命'
+                            },
+                        ]
+                    },
+                    {
+                        category: "T1",
+                        count: 3,
+                        children: [
+                            {
+                                name: '小明'
+                            },
+                            {
+                                name: '里斯'
+                            },
+                            {
+                                name: '维他命'
+                            },
+                        ]
+                    },
+                    {
+                        category: "T2",
+                        count: 3,
+                        children: [
+                            {
+                                name: '小明'
+                            },
+                            {
+                                name: '里斯'
+                            },
+                            {
+                                name: '维他命'
+                            },
+                        ]
+                    },
+                    {
+                        category: "T3",
+                        count: 3,
+                        children: [
+                            {
+                                name: '小明'
+                            },
+                            {
+                                name: '里斯'
+                            },
+                            {
+                                name: '维他命'
+                            },
+                        ]
+                    },
+                    {
+                        category: "T4",
+                        count: 3,
+                        children: [
+                            {
+                                name: '小明'
+                            },
+                            {
+                                name: '里斯'
+                            },
+                            {
+                                name: '维他命'
+                            },
+                        ]
+                    },
+                ],
+                isShowDetail: false,
+                showAll: false
+            },
+            mounted () {
+                this.list = this.list.map((item) => {
+                    item.show = false;
+                    return {
+                        ...item
+                    }
+                })
+            },
+            methods: {
+                showDetail (item) {
+                    item.show = !item.show;
+                },
+                mouseenter () {
+                    this.showAll = true;
+                },
+                mouseleave () {
+                    this.showAll = false;
+                }
+            }
+        })
+    </script>
+</body>
+</html>
