@@ -9,23 +9,19 @@
 <body>
     <div id="app">
         <div>
-            {{message}}
-            <button v-bind:[eventName]="test">点击测试</button>
+            <div :class="['contsiner-class-name', 'err-class-name']"></div>
+            <div :class="classArr"></div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <!-- <script src="./index.js"></script> -->
 <script>
     let app = new Vue({
         el: "#app",
         data: {
-            message: 123,
-            eventName: 'id'
+            showContainer: true,
+            hasError: true
         },
         methods: {
-            test () {
-                alert('123')
-            }
         }
     })
 </script>
