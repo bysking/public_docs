@@ -101,22 +101,94 @@
 
 5. 空行
 
+   - 添加空行位置，增加可读性
+    > - 方法之间
+    > - 局部变量和第一条语句之间
+    > - 多行和单行注释之前
+    > - 方法内逻辑片段之间
+
+
 
 6. 命名
+   - 6.1 变量和函数
+       - 变量使用名词前缀，方法使用动词前缀 
+       - 小驼峰命名：针对变量和函数名
+            > let testName = 'xiaoming'
+       - 前缀举例 
+            - can | 函数返回一个布尔值
+            - has | 函数返回一个布尔值
+            - is | 函数返回一个布尔值
+            - get | 函数返回一个非布尔值
+            - set | 函数用于保存一个值值
+   - 6.2 常量
+     - 不变的常量，大写字母加下划线
+     - > 举例
+         ```
+         // 直观看出count是变量，MAX_COUNT是常量
+         if (count < MAX_COUNT>) {
+             doSomething();
+         }
 
-
-- 6.1 变量和函数
-- 6.2 常量
-- 6.3 构造函数
-
+         ```   
+   - 6.3 构造函数
+        - 构造函数使用大驼峰命名
+        > 举例
+        ```
+        let me = new Person('xiaoming')
+        ``` 
 
 7. 直接量
+
+    原始值：string+number+boolean+null+undefined
+
 - 7.1 字符串
+    - 使用单引号，双引号都可，代码风格保持一致，双引号内部嵌套双引号需要对内部双引号转义
+    - 多行字符后串使用 + 操作符链接
 - 7.2 数字
+    - 整数 + 浮点数（小数点前后数字不省略）禁止8进制直接量
 - 7.3 null
+    - 初始化一个变量，可能赋值为对象
+    - 函数的参数或返回值是对象时，可以使用null
+    - 函数的参数或返回值是对象时，可以使用null
+    - null可理解为对象占位符
+    > 代码举例
+    ```
+    let peroson = null;
+
+    function getPerson() {
+        if (condition) {
+            return new Person('xiaoming');
+        }
+        return null;
+    }
+
+    let person = getPerson();
+    if (person !== null) {
+        doSomething();
+    }
+    ``` 
 - 7.4 undefined
+    - 变量以生声明但是还未赋值
+    > 代码举例
+    ```
+    let peroson;
+    console.log(typeof person) // undefined
+    ```  
 - 7.5 对象直接量
+    - 创建对象直接使用直接量
+    > 代码举例
+    ```
+    let book = {
+        title: 'i am a book',
+        author: 'markTown'
+    }
+    ```  
 - 7.6 数组直接量
+    - 创建数组对象也直接使用直接量
+    > 代码举例
+    ```
+    let arr = ['1', '2', '3']
+    ``` 
 ### 1.2 第二章：注释
 ### 1.3 第三章：语句和表达式
 ### 1.4 第四章：变量函数运算符
