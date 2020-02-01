@@ -228,10 +228,64 @@ if (condition) {
     ```
 
 ### 1.3 第三章：语句和表达式
+if 语句的书写（类似的还有 for, while, do while, try catch）
+- 举个例子
+```
+if (condition) {
+    doSomthing();
+}
+```
+- 上面需要注意的是花括号的换行，同时if条件不写在一行，内部语句块合理空行，括号左右留有一空格
 
+switch 语句的书写
+- 举个例子
+```
+switch (condition) {
+    case 'first':
+        // code
+        break;
+    case 'second':
+        // code
+        break;
+    case 'first':
+        // code
+        break;
+    default:
+        // code
+}
+```
+switch 语句连续执行，共用条件,添加必要注释
+- 举个例子，条件为first,second，都执行code1
+```
+switch (condition) {
+    case 'first':
+    case 'second':
+        // code1
+        break;
+    case 'first':
+        // code2
+        break;
+    default: // 没有默认行为且写了注释，此处可省略
+        // code3
+}
+```
 
+- for循环
+  > 传统for循环用于遍历数组成员，for-in用于遍历对象属性
+  - 两种方法可以改变循环执行流程
+    - return 或 throw
+    - break continue(一般可用if条件代替)
+
+- for in循环举例
+    ```
+    for (key in myObject) {
+        if (myObject.hasOwnProperty(key)) { // 排除原型上链的属性
+            // doSomething
+        }
+    }
+    ```
 ### 1.4 第四章：变量函数运算符
-
+ 
 
 
 ## 2. 编程实践
