@@ -285,8 +285,87 @@ switch (condition) {
     }
     ```
 ### 1.4 第四章：变量函数运算符
- 
+ - 变量声明
+    - 函数内部任意位置定义的变量和在函数顶部定义的变量等效，因为存在变量提升，于是推荐用以把变量声明放在函数顶部
+        > 举个例子
+        ```
+        function test () {
 
+            // 多个变量合并一起声明，注意换行以及变量的对齐
+            let i,
+                j,
+                testValue;
+
+            // other code
+        }
+        ```
+ - 函数声明
+    - 与变量一样，也存在变量提升，推荐先声明后使用
+        > 举个例子
+        ```
+        function test () {
+
+            // 多个变量合并一起声明，注意换行以及变量的对齐
+            let i,
+                j,
+                testValue;
+
+            // other code
+        }
+        ```
+    - 立即执行函数
+        > 举个例子
+        ```
+        let value = (function () {
+            
+            // 函数体
+            
+            return {
+                msh: 'hi'
+            }
+        } ())
+        ```
+ - 严格模式
+   - 指令脚本： 
+        ```
+        "use strict" // 一般局部使用，比如函数体内
+        ```
+        > 举例
+        ```
+        function test () {
+            "use strict";
+
+            // code
+        }
+        ```
+ - 相等的比较(总是推荐 === 与 ！==)
+   - 强制类型转换会驱使某种类型变量自动转换成其他不同类型的变量 
+        ```
+        // number与string
+        console.log( 5 == '5') // true
+
+        // 使用 ===
+        console.log( 5 === '5') // false
+
+        console.log( null == undefined) // true
+        ```
+
+   - 对象与非对象比较 
+       - 首先调用对象的valueOf(),咩有则调用toString()得到原始类型在进行比较
+ - eval
+   - 参数为字符串，当作代码执行，用于加载执行外部代码
+        ```
+        eval("alert('hi')")
+        ```
+   - setTimeout,setInterval,Function构造函数也可以，不推荐使用
+ - 原始包装类型
+   - 让原始值具有对象般的行为
+   - 3个：String,Boolean,Number
+        ```
+        let name = "xiaoming";
+        console.log(name.toUpperCase()) // 引擎创建对象，使用后就销毁
+        ```
+   - setTimeout,setInterval,Function构造函数也可以，不推荐使用
 
 ## 2. 编程实践
 
