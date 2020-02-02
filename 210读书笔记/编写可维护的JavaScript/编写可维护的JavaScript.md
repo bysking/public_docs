@@ -584,8 +584,40 @@ myBooks.book2 = {}; // book的命名空间
         // code
     }
   ```    
-### 2.6 xxxxxxxxxxx
+### 2.6 第9章 将配置从代码中分离出来
+- 配置数据举例
+    > 1. URL
+    2. 需要展现给用户的字符串
+    3. 重复的值
+    4. 设置项，配置项
+    5. 任何可能发生变更的值
 
+### 2.6 第10章 抛出自定义错误
+- 为什么要抛出错误
+  -  把代码执行失败的地方暴露出来，便于定位解决
+- 如何抛出
+  -  throw new Error('错误信息')
+  -  如果没有通过try catch捕获的话浏览器通常直接显示错误字符串
+  -  try catch如果try中包含了return ，需要等finally执行完毕之后才能返回
+  -  7中错误类型：
+     - Error 基本错误类型
+     - EvalError 执行eval()函数报错
+     - RangeError 数字超过边界
+     - RefrenceError 期望对象不存在，null上调用其函数
+     - SyntaxError 语法错误
+     - TypeError 变量不是期望类型
+     - URIError EncodeURL()等函数传递的参数是非法的URI字符串时抛出错误
+     - Error 基本错误类型
+- 自定义错误
+    - 代码示例
+        ```
+        function MyError (msg) {
+            this.message = msg
+        };
+
+        MyError.prototype = new Error();
+        
+        ``` 
 ## 3. 自动化
 
 ### 3.1 ---
