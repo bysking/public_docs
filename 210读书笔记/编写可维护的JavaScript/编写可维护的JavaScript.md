@@ -368,9 +368,69 @@ switch (condition) {
    - setTimeout,setInterval,Function构造函数也可以，不推荐使用
 
 ## 2. 编程实践
+代码风格规范的目的是解决多人工作模式下代码的一致性，松耦合增加分层合理性和消除依赖性
+### 2.1 UI层的松耦合
+- 用户界面的定义
+    - HTML定义页面
+    - CSS添加页面样式
+    - js添加页面行为
+- 松耦合说明
+    - 修改一个组件而不需要修改其他组件时就做到了松耦合
+- 松耦合说优势
+    - 可维护
+    - 容易定位问题所在
+    - 容易调试
+- js从css中抽离
+    - 避免在css中使用expression函数，表达式
+- js从html中抽离
+    - 比如给一个按钮绑定事件
+        ```
+        <button onclick="doSomething()" id="action-btn">Click</button>
+        ```
+        有可能用户点击时函数并不存在，会没有响应或报错
+    - 解决方案(js从html中抽离)
+        ```
+        function doSomething() {} // 函数定义
 
-### 2.1 ---
-### 2.2 ---
+        // 获取按钮DOM
+        let btn = document.getElementById('action-btn');
+        btn.addEventListener('click', doSomething, false);
+
+        ``` 
+    - 事件绑定补充-兼容方法封装
+        ```
+        function bindEvent(target, type, handler) {
+            if (target.addEventListener) {
+                target.addEventListener(type, handler, false)
+            } else if (target.attachEvent) {
+                target.attachEvent('on' + type, handler)
+            } else {
+                target['on' + type] = handler;
+            }
+        }
+
+        ``` 
+- 调试技巧
+    - 最笨的办法，一行一行注释掉代码，css问题也许会出现在js代码中
+    - 一般js需要操作css时，使用类名,他是css与js通信的桥梁，保证松耦合
+        > 代码
+            ```
+            // 原生方法：添加一个css类
+            element.className += 'class1'
+
+            // html5方法
+            element.classList.add('class1')
+
+            // JQ方法
+            $(element).addClass('class1')
+            ``` 
+### 2.2 避免使用全局变量
+- 1111
+    - 说明
+    > 代码举例
+    ```
+    asd
+    ``` 
 ### 2.3 ---
 ### 2.4 ---
 
