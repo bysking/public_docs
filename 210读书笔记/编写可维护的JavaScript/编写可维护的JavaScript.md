@@ -471,7 +471,120 @@ myBooks.book2 = {}; // book的命名空间
      // other code
  } (window));
  ``` 
-### 2.4 ---
+
+### 2.4 事件处理
+- 规则1： 隔离应用逻辑
+- 规则2： 不要分发事件对象
+- 规则3： 不要分发事件对象
+    > 点击弹框代码分析说明
+    ```
+    // bad 应用逻辑(弹框)和事件处理（点击）耦合在一起，
+    function handleClick(event) {
+        let popup = document.getElementById('popup');
+        popup.style.left = event.clientX + 'px';
+        popup.style.top = event.clientY + 'px';
+        popup.className = 'reveal';
+    }
+    ```
+
+    > 拆分用用逻辑
+    ```    
+    let myApplication = {
+        handleClick: function (event) { // 处理点击
+            this.showPopup(event); // 调用抽离的弹框函数
+        },
+
+        showPopup: function () { // 处理弹框
+            let popup = document.getElementById('popup');
+            popup.style.left = event.clientX + 'px';
+            popup.style.top = event.clientY + 'px';
+            popup.className = 'reveal';  
+        }
+    }
+
+    // 给需要弹框的dom绑定事件
+    addEventListener(element, 'click', function (event) {
+        myApplication.handleClick(event);
+    })
+    ```
+
+    > 不要分发事件对象
+    ```    
+    let myApplication = {
+        handleClick: function (event) { // 处理点击
+
+            // 阻止默认事件以及冒泡
+            event.preventDefault();
+            event.stopPropagation();
+
+            this.showPopup(event.clientX, event.clientY); // 调用抽离的弹框函数
+        },
+
+        showPopup: function (x, y) { // 处理弹框传入必要参数即可
+            let popup = document.getElementById('popup');
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+            popup.className = 'reveal';  
+        }
+    }
+
+    // 给需要弹框的dom绑定事件
+    addEventListener(element, 'click', function (event) {
+        myApplication.handleClick(event);
+    })
+    ```
+### 2.5 避免"空比较"
+- 检测原始值
+  - 如果希望某一个值是原始值：字符串、数字、布尔、null、undefined,最佳选择是使用typeof返回类型字符串
+  > 代码举例
+  ```
+  typeof 1; // number
+  typeof "1"; // string
+  typeof true; // boolean
+  typeof undefined; // undefined
+
+  // 检测null直接使用 === 或 !==
+  // 检测数组使用 Array.isArray()
+  ``` 
+- instance检测对象
+  - instanceof会检测构造器的实例不是则在原型链上继续查找，并非最佳
+  - 检测方法
+  ```
+  function test() {};
+
+  console.log(typeof test === 'function' ); // true
+  ```    
+  - 检测数组
+  ```
+    function isArray(value) {
+        if (typeof Array.isArray === 'function') {
+            return Array.isArray(value);
+        } else {
+            return Object.prototype.toString.call(value) === '[object Array]';
+        }
+
+    };
+  ```    
+  - 对象属性检测
+  ```
+    let obj = {
+        count: 0,
+        name: '123'
+    }
+
+    // 判断对象或其原型对象上是否拥有某个属性值
+    if ('count' in obj) { 
+
+        // code
+    }
+
+    // 判断对象自身是否拥有某个属性值
+    if (obj.hasOwnProperty('count')) { 
+
+        // code
+    }
+  ```    
+### 2.6 xxxxxxxxxxx
 
 ## 3. 自动化
 
