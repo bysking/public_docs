@@ -425,13 +425,52 @@ switch (condition) {
             $(element).addClass('class1')
             ``` 
 ### 2.2 避免使用全局变量
-- 1111
-    - 说明
+- 任何在全局作用域中声明的变量都是window对象（Global Object）的属性
     > 代码举例
     ```
-    asd
+    var color = 'red';
+    function test() {}
+
+    console.log(color === window.color) // true
+    console.log(test === window.test) // true
     ``` 
-### 2.3 ---
+- 全局变量带来的问题
+  - 命名冲突
+  - 难以测试
+- 问题解决方案
+    - 避免函数内部引用外部自定义变量（消除依赖）
+    - 全局变量定义不要使用常规单词，添加限定符，避免冲突
+- 意外的全局变量
+    ```
+    function test() {
+        var count = 10; // 注意这里加了分号
+            name = "这里会变成全局变量"; // 同时name是window的一个默认属性，这里会修改，成为隐患 
+    }
+    ``` 
+    - 全局变量定义不要使用常规单词，添加限定符，避免冲突
+- 建议：避免使用全局变量
+
+### 2.3 命名空间
+> 代码举例，可以往命名空间挂属性
+```
+let myBooks = {};
+
+myBooks.book1 = {}; // book1的命名空间
+
+myBooks.book2 = {}; // book的命名空间
+```
+> 还可以通过模块的方式实现命名空间AMD,CommonJS
+ - 零全局变量 
+ > 使用一个立即执行函数调用，并在内部使用严格模式避免创建全局变量
+ ```
+ // 适用于脚本短，不需要和其它代码交互
+ (function (win) {
+     "use strict";
+     var doc = win.document;
+
+     // other code
+ } (window));
+ ``` 
 ### 2.4 ---
 
 ## 3. 自动化
