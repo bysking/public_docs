@@ -801,8 +801,108 @@ delete myObj.sayHi;
 - 避免特性推断和浏览器推断(敲黑板：汽车有4轮，但不能说4轮的就是汽车)
  
 ## 3. 自动化
+> 利弊分析-优势
+- 本地代码任意组织，无需和线上保持一致 
+- 静态分析可自动发现错误 
+- 构建之前可以进行文件连接压缩等处理 
+- 自动化测试易于发现问题 
+- 方便地部署到生产环境 
+- 轻松快速执行常见任务
+> 弊端
+- 开发环境修改后需要本地构建
+- 线上BUG比较难定位
+- 技术水平低会遇到较多问题
 
-### 3.1 ---
-### 3.2 ---
+总结： 利大于弊 
+
+
+### 3.1 第13章 文件和目录结构
+> 最佳实践总结
+- 一个文件只包含一个对象
+  - 让不同人维护各自不同的文件，避免多人维护一个文件
+- 相关的文件使用目录分组
+- 保持第三方代码独立
+  - 类库代码 
+- 确定创建位置
+    - 代码构建输出位置不要放在源码目录，放在独立的目录
+- 保持测试代码的完整性
+    - 测试代码放到显眼的地方，方便测试人员排查测试场景遗漏情况
+### 3.2 第14章 ant
+> Ant构建三部曲
+- 任务
+    - 构建过程中的一个步骤，比如执行一个程序或赋值一个文件
+- 目标
+  - 一组有序任务的集合  
+- 项目
+    - 所有目标的容器
+> build.xml配置文件
+```
+<project name="maintainblejs" default="hello">
+    <target name="hello">
+        <echo>hello world</echo>
+    </target>
+</project>
+``` 
+
+分析：project代表整个项目，name必须有，用于标识此项目，target表示目标， echo用于回显任务
+
+关系： 一个项目可对应多个目标，一个目标可对应多个任务
+
+> 构建
+项目目录下运行命令行
+```
+ant // 读取project的default选择目标
+``` 
+```
+ant hello // 显式指定运行的目标
+``` 
+
+> 目标操作的依赖将会被首先执行,使用depends指定
+```
+<project name="maintainblejs" default="hello">
+
+    <target name="hello">
+        <echo>hello world</echo>
+    </target>
+
+    <target name="goodbye" depends="hello">
+        <echo>good bye</echo>
+    </target>
+</project>
+```
+> 属性,${version} 使用
+```
+the version is ${version}
+```
+```
+<project name="maintainblejs" default="hello">
+    <property name="version" value="0.1.1"></property>
+</project>
+```
+> 外部文件导入属性
+- build.properties 
+```
+version=1.0
+copyright="123"
+```
+
+- build.xml中使用properties元素加载属性定义文件
+```
+<project name="maintainblejs" default="hello">
+
+    <loadproperties srcfile="build.properties" value="0.1.1"></loadproperties>
+    <target name="version">
+        <echo>Version is ${version}</echo>
+    </target>
+</project>
+```
+
+> buildr项目
+- Buildr是一个寻找和收集前端相关且语法简单的Ant任务的开源项目 
+- 使用之前需要拥有一份源码 
+- 然后使用命令导入所有任务
+    ```
+    <import file="/path/to/buildr/buildr.xml" />
+    ```  
 ### 3.3 ---
 ### 3.4 ---
