@@ -755,7 +755,51 @@ delete myObj.sayHi;
                 console.log(Object.isExtensible(person)); // false 不可扩展
                 person.age = 25; // 悄悄失败，strict模式下会抛出错误
                 delete person.name = 25; // 悄悄失败，strict模式下会抛出错误
-            ```   
+            ```
+### 2.8 第12章 浏览器嗅探
+- User-Agent检测：根据该字符串确定浏览器类型
+    > 网景浏览器
+    - 在'Mozilla/2.0 (Win95; I)'中查找'Mozilla'和版本号字符串
+    > IE浏览器
+    - 在'Mozilla/2.0 (compatible; MISE 3.0; windows 95)'中查找'Mozilla'和版本号字符串
+    ```
+        // IE 8 以及之前的版本的user-agent字符串不变化，可以与新版本的分开处理
+        if (isIE8OrEarlier) {
+            // 处理IE 8以及之前的版本
+        } else {
+            // 处理其他浏览器
+        }
+
+        // 检测IE 代码
+        if (navigator.userAgent.indexOf('MISE') > -1) {
+            // 是IE
+        } else {
+            // 非IE
+        }
+    ``` 
+- 特性检测：对特定的功能(函数)进行存在性检测
+    ```
+        // 根据id获取Dom
+        function getById(id) {
+            let element = null;
+
+            if (document.getElementById) { // DOM标准方法
+                element = document.getElementById(id);
+            } else if (document.all) { // IE
+                element = document.all[id];
+            } else if (document.layers) { // Netscape <= 4
+                element = document.layers[id];
+            }
+
+            return element;
+        }
+    ```
+  > 重要组成部分 
+    - 探测标准方法
+    - 探测不同浏览器的特定方法
+    - 都不存在时提供一个备用方法
+- 避免特性推断和浏览器推断(敲黑板：汽车有4轮，但不能说4轮的就是汽车)
+ 
 ## 3. 自动化
 
 ### 3.1 ---
