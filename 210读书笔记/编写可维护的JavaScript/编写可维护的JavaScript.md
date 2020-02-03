@@ -592,7 +592,7 @@ myBooks.book2 = {}; // book的命名空间
     4. 设置项，配置项
     5. 任何可能发生变更的值
 
-### 2.6 第10章 抛出自定义错误
+### 2.7 第10章 抛出自定义错误
 - 为什么要抛出错误
   -  把代码执行失败的地方暴露出来，便于定位解决
 - 如何抛出
@@ -618,6 +618,144 @@ myBooks.book2 = {}; // book的命名空间
         MyError.prototype = new Error();
         
         ``` 
+### 2.7 第11章 不是你的对象不要动
+- 如果你的代码没有创建以下对象，请勿修改
+  - 原生对象（Object,Array等） 
+  - Dom对象（比如document） 
+  - Bom浏览器对象模型（比如window） 
+  - 类库对象
+> 原则：不覆盖、不新增方法、不删除方法
+- 不覆盖
+```
+// 不好的写法：把方法覆盖掉
+document.getElementById = function () {
+    return null;
+}
+```    
+- 不新增方法
+```
+// 不好的写法：在DOM对象上增加方法
+document.sayHi = function () {
+    alert('hi');
+}
+```    
+- 不删除方法（覆盖也算, 或使用delete删除定义在对象上的方法[无法删除原生性上的]）
+```
+// 不好的写法， getElementById是原型上的方法，无法delete删除，可通过null赋值阻止调用
+document.getElementById = null;
+
+// delete删除
+let myObj = {
+    sayHi: function () {
+        alert('hi');
+    }
+};
+delete myObj.sayHi;
+``` 
+    - 如果团队的某一个方法不使用，不应删除，可能会导致运行时错误，应该标识为废弃
+> 对象扩展（最受欢迎的对象扩充形式是继承）
+- 基于对象的继承
+    ```
+    // 创建一个对象
+    let person = {
+        name: 'xiaoming',
+        sayHi: function () {
+            alert('hi ' + name);
+        }
+    }
+
+    // 继承，基于person创建一个对象
+    let myPerson = Object.create(person);
+    myPerson.sayHi(); // hi xiaoming
+
+    // 指定第二个参数，添加到新建的对象中
+    let myPersonNew = Object.create(person, {
+        name: {
+            value: '123'
+        }
+    });
+    myPersonNew.sayHi(); // hi 123
+    ```
+- 基于类型的继承
+    - 原生类型继承
+    ```
+        function MyError(msg) {
+            this.message = msg;
+        }
+
+        MyError.prototype = new Error();
+    ``` 
+    - 开发者自定义了构造函数的继承
+    ```
+        function Person(name) { // 构造函数首字母大写
+            this.name = name;
+        }
+
+        function Author(name) { // 想让Author继承Person
+            Person.call(this, name)
+        }
+
+        Author.prototype = new Person();
+    ``` 
+    分析：Author继承自Person,name由Person管理，于是继续使用Person构造函数定义name,Person实在this上执行的（this指向Author）所以最后name被定义在了Author上.
+- 门面模式
+    > 门面模式创建新的接口，实现特定的接口；适配器模式实现已经存在的接口
+    ```
+    function DomWrapper(element) {
+        this.element = element;
+    }
+
+    // 添加一个添加类名的操作接口方法
+    DomWrapper.prototype.addClass = function (className) {
+        element.className += ' ' + className;
+    }
+
+    // 添加一个移除元素的操作接口方法
+    DomWrapper.prototype.remove = function () {
+        this.element.parentNode.removeChild(this.element);
+    }
+
+    // 调用
+    let wrapper = new DomWrapper(documenet.getElementById('div'));
+    wrapper.addClass('selected');
+    wrapper.remove()
+    ``` 
+- 关于Polyfill
+    > 一个polyfill是指一种功能的模拟，这些功能已经在新版本的浏览器中已经有完备定义且原生实现，目的是让老版本浏览器如同新版本一样正常使用该功能。
+    - 阻止修改
+        - ES5引入几个方法防止对对象的修改,对象一旦锁定，无法解锁，使用严格模式
+          - > 防止扩展
+            - 禁止添加，但已存在的属性方法可以修改，删除 
+            ```
+                // 锁定对象防止被扩展
+                let person = {
+                    name: 'sxf'
+                };
+
+                Object.preventExtension(person);// 锁定对象
+                console.log(Object.isExtensible(person)); // false
+                person.age = 25; // 悄悄失败，strict模式下会抛出错误
+            ``` 
+          - > 密封
+            - 禁止删除对象已经存在的属性和方法
+            ```
+                // 密封对象防止已存在的属性方法被删除,也不可扩展
+                Object.seal(person);// 密封对象
+                console.log(Object.isExtensible(person)); // false
+                console.log(Object.isSealed(person)); // true
+                person.age = 25; // 悄悄失败，strict模式下会抛出错误
+            ```  
+          - > 冻结 
+            - 禁止修改已经存在的属性和方法
+            ```
+                // 冻结对象防止已存在的属性方法被修改,也不可扩展
+                Object.freeze(person);// 冻结对象
+                console.log(Object.isFrozen(person)); // true
+                console.log(Object.isSealed(person)); // true
+                console.log(Object.isExtensible(person)); // false 不可扩展
+                person.age = 25; // 悄悄失败，strict模式下会抛出错误
+                delete person.name = 25; // 悄悄失败，strict模式下会抛出错误
+            ```   
 ## 3. 自动化
 
 ### 3.1 ---
