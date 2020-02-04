@@ -987,4 +987,52 @@ jshint.option = curly=true,forin=true,latedef=true,noempty=true,undef=true,rhino
     </jshint>
 </target>
 ```
-### 3.4 ---
+### 3.4 第16章 文件合并加工
+> 文件合并
+- 部署到生产环境之前有利于减少http请求数
+```
+// 合并任务
+<target name="concatenate">
+    <concat destfile="${build.dir}/build.js"> // 指定目录下的文件合并生成build.js
+        <fileset dir="${src.dir}" includes="**/*.js" />
+    </concat>
+</target>
+```  
+> 合并文件行尾结束符的处理
+\<concat>配置 fixlastline="yes",concat任务会在最后一行没有换行符的时候自动添加换行符
+
+> 不同系统有不同的换行符，使用eol="lf" 配置为UNIX，兼容性跨平台好
+
+> 文件头，文件尾巴
+- 把构建时间插入文件中
+```
+在文件顶部定义,每次构建会生成新的时间戳，存储在build.time中
+<tstamp>
+    <format property="build.time"
+            pattern="MMMM d, yyyy hh:mm:ss
+            local="en, US" />
+</tstamp>
+
+// 然后就可以通过header或footer把时间戳插入文件
+
+<header>/* build time is: ${build.time}*/</header>
+``` 
+> 文件加工
+- 自动引入许可信息和版本信息
+```
+<loadfile property="license" srcfile="license.txt">
+
+// 通过${}引用属性变量
+```  
+- 在文件中替换一些文本
+```
+<target name="bake">
+    <replaceregexp match="@VERSION@" replace="${version}" flags="g" byline="true">
+        <fileset dir="${build.dir}" includes="**/*"/>
+    </replaceregexp>
+
+</target>
+``` 
+### 3.5 ---
+### 3.6 ---
+### 3.7 ---
