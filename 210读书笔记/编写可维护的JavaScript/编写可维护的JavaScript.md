@@ -1055,5 +1055,31 @@ jshint.option = curly=true,forin=true,latedef=true,noempty=true,undef=true,rhino
 - 构建是压缩
   - gzip任务实现 
 ### 3.6 第18章 文档化
+> 工具：JSDoc ToolKit: 项目文件的编码方式需要统一
+```
+/**
+* @namespace 应用程序单体
+*
+*/
+
+let MyApplication = {
+
+    /**
+    * 两个数字的加法
+    * @param { int } num1 第一个数字
+    * @param { int } num2 第二个数字
+    * @return { int } 两个数的和
+    * @static
+    */
+    add: function (num1, num2) {
+        return num1 + num2
+    }
+}
+
+// 生成文档
+java -jar jsrun.jar app/run.js core/core.js -t=template/jsdoc/ -d=./out
+
+``` 
+> YUIDoc
 ### 3.7 第19章 自动化测试
 ### 3.7 第20章 组装到一起
