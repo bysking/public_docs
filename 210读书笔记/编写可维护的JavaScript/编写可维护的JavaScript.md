@@ -904,5 +904,87 @@ copyright="123"
     ```
     <import file="/path/to/buildr/buildr.xml" />
     ```  
-### 3.3 ---
+### 3.3 第15章 检验
+把JSHint整合到构建系统中-自动分析并验证js代码
+
+> 查找文件
+- 验证第一步就是查找
+  - 方式1： fileset(常用
+  - )
+  ```
+  <fileset dir="./src" includes="**/*.js" excludes="**/*-test.js" />
+  ``` 
+  - 方式2： filelist
+  ```
+  <filelist dir="./src" files="core/core.js" />
+  ``` 
+> 任务：通过命令行以及配置检验文件
+- 命令式
+```
+    // JSLint + Rhino命令行（依赖js.jar文件）
+    java -jar js.jar jshint.js curly=true, noempty-true core/core.js
+
+
+``` 
+- 配置式
+```
+<target name="validate">
+    <apply excutable="java"> // 要执行的程序
+        <fileset dir="${src.dir}" includes="**/*.js" /> // 批处理文件配置
+        <arg line="-jar" /> // 用于java的选项， line指定
+        <arg path="js.jar" /> // 文件
+        <arg path="jshint.js" />
+        <arg line="curly=true,forin=true,latedef=true,noempty=true,undef=true,rhino=true" />
+    </apply>
+</target>
+```
+- 增强的目标操作
+```
+ <apply excutable="java" parallel="true"> // 接受多个文件作为参数，所有文件一次性传递，提升构建速度 
+
+// 构建抛错
+<apply excutable="java" failonerror="true" parallel="true">
+```
+
+- 其他方面改进
+> 把js.jar、jshint.js的位置、命令行选项通过外部文件配置成变量读入 
+
+```
+// 属性文件定义
+src.dir = ./src
+lib.dir = ./lib
+
+rhino = ${lib.dir}/js.jar
+jshint = ${lib.dir}/jshint.js
+
+jshint.option = curly=true,forin=true,latedef=true,noempty=true,undef=true,rhino=true
+```
+
+```
+// 在xml构建配置中引用上面定义好的变量
+<target name="validate">
+    <apply excutable="java"> // 要执行的程序
+        <fileset dir="${src.dir}" includes="**/*.js" /> // 批处理文件配置
+        <arg line="-jar" /> // 用于java的选项， line指定
+        <arg path="${rhino}" /> // 文件
+        <arg path="${jshint}" />
+        <arg line="${jsint.options}" />
+    </apply>
+</target>
+```
+- Buildr任务
+> 一种更加便捷的使用jshint任务的方式，它把很多运行JSHint所需的配置抽离出来，导入build.xml后同通过\<fileset> 即可使用\<jshint>任务
+```
+<target name="validate">
+    <jahint>
+        <fileset dir="${src.dir}" includes="**/*.js" />
+    </jshint>
+</target>
+
+<target name="validate">
+    <jahint options="${jshint.options}"> // 更改默认配置项
+        <fileset dir="${src.dir}" includes="**/*.js" />
+    </jshint>
+</target>
+```
 ### 3.4 ---
