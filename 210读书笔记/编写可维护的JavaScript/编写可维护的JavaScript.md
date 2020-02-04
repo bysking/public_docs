@@ -1033,6 +1033,27 @@ jshint.option = curly=true,forin=true,latedef=true,noempty=true,undef=true,rhino
 
 </target>
 ``` 
-### 3.5 ---
-### 3.6 ---
-### 3.7 ---
+### 3.5 第17章
+> 文件精简和压缩
+- 文件精简工具
+    - UglifyJs 基于Node.js的压缩工具
+    ```
+    uglifyjs --no-mangle-functions -o core/core-min.js core/core.js
+    ``` 
+    - YUI Compressor
+    ```
+    java -jar yuicompressor.jar --preserve-semi core/core.js -o core/core-min.js
+    ``` 
+    - Closure Compiler
+    ```
+    java -jar compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js core/core.js --js_output_file core/core-min.js
+    ``` 
+ 
+- 文件压缩 
+> 利于文件传输
+- 运行时压缩： 浏览器Accept-Encoding: gzip, deflate代表支持这些文件解压缩 ；服务器Content-Encoding: gzip代表服务器使用的压缩类型
+- 构建是压缩
+  - gzip任务实现 
+### 3.6 第18章 文档化
+### 3.7 第19章 自动化测试
+### 3.7 第20章 组装到一起
