@@ -1082,4 +1082,33 @@ java -jar jsrun.jar app/run.js core/core.js -t=template/jsdoc/ -d=./out
 ``` 
 > YUIDoc
 ### 3.7 第19章 自动化测试
+> 测试工具
+- YUI Test Selenium 引擎
+    - 和Selenium一起工作（能启动浏览器并在他们内部执行命令的服务器）
+- Yeti
+  - 用于与YUI Test一起工作, 用js写测试并在Node.js上运行 
+- PhantomJS
+  - WebKit是一个驱动safari和chrome的渲染引擎，而 PhantomJS 就是一个命令行版本的Webkit
+  - WebKit附带两个测试框架：Jasmine和QUnit
+- JsTestDriver
+    - 基于已经安装的浏览器进行测试
 ### 3.7 第20章 组装到一起
+> 编制打包计划步骤
+  - 开发版本
+    - 大多数开发版本只做两件事：验证代码和链接文件  
+  - 集成版本
+    - 作为主要防御错误的措施，尽可能包含校验和测试 
+    - 往往作为持续集成系统（CI）的一部分而运行，因此需要多步骤：至少包含开发版本的工作以及测试 
+  - 发布版本
+    - 唯一要做的仅仅是加工文件，插入版权，版本号和其他相关的元信息 
+> CI系统
+
+比如每小时构建一次项目，把所有最新更新的文件部署到集成环境中
+
+- 常用CI系统
+  - Jenkins
+    - 基于JAVA的web应用程序，用于多个版本的管理。
+  - Continuum 
+  - BuildBot 
+  - Cruise Control 
+  - Gradle 
