@@ -68,6 +68,19 @@
     ```
     ts-node hello.ts
     ```
+  - 报错解决： 
+ ```
+ts-node : 无法加载文件 C:\Users\bysking\AppData\Roaming\npm\ts-node.ps1，因为在此系统上禁止运行脚本。有关详细信息，请参阅 https:/go.mic 
+rosoft.com/fwlink/?LinkID=135170 中的 about_Execution_Policies。
+所在位置 行:1 字符: 1
++ ts-node hello.ts
++ ~~~~~~~
+    + CategoryInfo          : SecurityError: (:) []，PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+  ```
+
+  右键开始菜单找到Windos PowerShell--执行set-ExecutionPolicy RemoteSigned命令，输入A即可
+  
 > 第2章： 类型与函数
 
 
