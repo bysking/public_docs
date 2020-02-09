@@ -649,9 +649,237 @@ f2 = f1; // 看f1的每个参数类型是否都在f2中的对应类型，此处�
 f1 = f2; // f2中的参数b: string在f1中没有，赋值不允许
 
 ```
-> 第3章：
-> 
->  接口与类
+
+> 2.3 函数
+
+- 函数定义
+
+```
+// js
+function add(a, b) {
+  return a + b;
+}
+
+// ts, 添加参数类型和返回类型
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+// 可以给变量赋值为一个函数类型
+let add2: (x: number, y: number) => number
+```
+
+- 可选参数
+
+ts中每个函数必须要有值，一一对应，占坑， 参数可选则使用'?'，且必须放置于最后
+
+```
+function buildName (fname: string, lname:string): string {
+  return fname + lname;
+}
+
+// 少传，只传一个参数
+let fullName = buildName('王')； // 报错，需要两个参数
+// 多传，多传一个参数
+let fullName = buildName('王'， 'yang', '123')； // 报错，只需要两个参数
+```
+
+- 默认参数
+
+```
+function buildName(fname="123", lname:string) {
+  return fname + lname;
+}
+
+// 默认参数未放置最后，需要占位undefined or null
+let testName = buildName(undefined, 'wang'); // 123wang
+let testName = buildName('li', 'wang'); // liwang
+```
+
+- 剩余参数
+
+函数定义时使用数组变量接受额外传入的参数
+
+```
+function buildName(fname: string, ...names: string[]) {
+  return fname + names.join(' ');
+}
+
+```
+
+2.3.3 回调函数和promise
+
+- 文件读取，转换成字符串
+
+```
+const fs = require('fs');
+
+function loadJSONSync (filePath: string) {
+  return JSON.parse(fs.readFileSync(filePath))
+}
+
+console.log(loadJSONSyns('test.json'))
+```
+
+- 异步版本
+
+```
+
+const fs = require('fs');
+function loadJSON (filePath: string, cb: (err: Error, data?: any) => void) {
+  fs.readFile(filePath, function (error, data) => {
+    if (error) {
+      cb(error); // 读取文件出错在cb回调函数里处理
+    } else {
+      cb (null, JSON.parse(data)); // null占位
+    }
+  })
+}
+
+``` 
+
+基于回调的异步函数：一定不要两次调用回调， 一定不要抛出错误
+
+- 具备高完成度的版本：
+
+```
+  const fs = require('fs');
+
+  function loadJSON(
+    filePath: string,
+    callback: (err: Error, data?: any) => void ) 
+  {
+    fs.readFile(filePath, function(error, data) {
+      if (error) {
+        callback(error); // 读取文件出错直接回调错误处理
+      } else {
+        let result;
+        try {
+          result = JSON.parse(data); // 读取转换都成功
+        } catch(err) {
+          callback(err); // 读取文件成功但是转换出错，直接回调错误处理
+        }
+        callback(null, result); // 成功后执行回调，传入转换的参数数据
+      }
+    })
+  }
+
+```
+
+- promise
+
+   > 3种状态
+
+    pending, resolved, rejected
+resolve,reject分别代表成功失败的处理函数
+
+```
+const p = new Promise ((resplve, reject) => {
+  resolve('成功数据处理')
+});
+
+p.then((res) => {
+  console.log(res); // 成功数据处理
+});
+p.catch((err) => {
+  console.log(err); // 失败数据处理， 没有reject，不被调用
+});
+
+```
+
+  - > 链式性
+
+then返回的依旧是Promise
+
+  - > ts与Promise
+
+  ts可以通过Promise链推测值的类型
+
+  ```
+  Promise.resolve(123)
+    .then((res) => {
+      // (parameter) res: number
+      return true;
+    })
+    .then((res) => {
+      // res: boolean
+    });
+  
+  ```
+
+  - > 链式回调改为Promise版本
+
+```
+const fs = require('fs');
+
+function readAsync(filePath: string): Promise: any {
+  return new Promise((resolve, reject)=> {
+    fs.readFile(filePath, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
+  })
+}
+```
+  - > Promise.all并行控制流 
+
+```
+function f1 (uid: string): Promise: <{}> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({ uid });
+    }, 1000)
+  });
+}
+function f2 (uid: string): Promise: <{}> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({ uid });
+    }, 1000)
+  });
+}
+function f3 (uid: string): Promise: <{}> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({ uid });
+    }, 1000)
+  });
+}
+
+// promise函数f1, f2, f3都执行完后进入then方法，这里还有一个promise.race方法, 只要其中一个执行完毕就进入then方法
+Promise.all([f1, f2, f3]).then((res) => {
+  // res: [{...}, {...}, {...}]
+})
+```
+
+  - ES8: async/await
+  - 重载： 函数名相同，参数列表不同
+  ```
+  // ts重载， 例子为，
+  根据传入的参数类型处理不同的逻辑
+  function padleft (value: string, padding: number): string
+  function padleft (value: string, padding: string): string
+  
+  function padLeft (value: string, padding: any) {
+    if (typeof padding === 'number') {
+      // code
+    }
+
+    if (typeof padding === 'string') {
+      // code
+    }
+
+    throw new Error('Expected string or number');
+  }
+
+  ``` 
+
+  声明多个不同的padLeft函数，然后在一个类型最宽泛的版本中实现它
+
+> 第3章：接口与类
 
 
 > 第4章： 命名空间与模块
