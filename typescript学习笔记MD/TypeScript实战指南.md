@@ -860,10 +860,10 @@ Promise.all([f1, f2, f3]).then((res) => {
   ```
   // ts重载， 例子为，
   根据传入的参数类型处理不同的逻辑
-  function padleft (value: string, padding: number): string
-  function padleft (value: string, padding: string): string
+  function padleft (value: string, padding: number): string; // 第二个参数类型为number
+  function padleft (value: string, padding: string): string; // 第二个参数类型为string
   
-  function padLeft (value: string, padding: any) {
+  function padLeft (value: string, padding: any) { // 函数实现的第二个参数为任意类型any
     if (typeof padding === 'number') {
       // code
     }
@@ -879,8 +879,323 @@ Promise.all([f1, f2, f3]).then((res) => {
 
   声明多个不同的padLeft函数，然后在一个类型最宽泛的版本中实现它
 
+
 > 第3章：接口与类
 
+接口是一种约束作用（限制和规范）
+
+- 简单示例接口如何工作
+
+```
+function pringLabel(labelObj: {label: string}) {
+  console.log(labelObj.label);
+}
+
+let myObj = { szie: 10, label: 'Size 10 Object' };
+pringLabel(myObj);
+```
+类型检查器会查看函数调用，函数需要一个参数，类型为对象，必须要含有名为label,类型为string的属性，一般传入的参数会包含许多的属性，但是编译器只检查必备的属性是否存在，同时类型是否匹配，有时也并非如此。
+
+- 重写上述例子
+
+使用接口来描述
+
+```
+interface LabelledValue {
+  label: string
+}
+
+function printLabel(labelObj: LabelledValue) {
+  console.log(labelObj.label);
+}
+
+let myObj = { szie: 10, label: 'Size 10 Object' }; // 不检查顺序
+pringLabel(myObj);
+```
+- > 可选属性
+interface里面的属性可选
+```
+interface SquareConfig { // 经过vscode实践测试，这里
+  color?: string;
+  width?: number;
+}
+
+function creatSquare(config: SquareConfig):{color:string, area: number} {
+  let newSquare = { color: "white", area: 100 };
+
+  if (config.color) { // 有属性就执行相应代码
+    newSquare.color = config.color;
+  }
+  if (config.width) {
+    newSquare.area = config.width * config.width;
+  }
+
+  return newSquare;
+}
+```
+可选属性的好处：
+
+  - 对可能存在的属性进行预定义
+  - 可以捕获引用了不存在的属性时的错误，比如把color写成coulor就会报错
+
+
+- > 只读属性
+
+  ```
+
+  interface Point {
+    readonly x: number, // 添加只读前缀
+    readonly y: number
+  }
+
+
+  let p1: Point = { // 声明Point类型实例
+    x: 1,
+    y: 1
+  }
+
+  p1.x = 3; // error, 只读
+
+  ```
+
+> 数组只读
+  ```
+  // ReadonlyArray<T>与Array<T>类似，只是去除数组可变方法， 确保数组创建后不能被修改
+  let a: number[] = [1, 2, 3, 4];
+  let ro: ReadonlyArray<number> = a;
+  ro[0] = 12; // error， 只读
+  ro.push(12); // error， 只读
+
+  a = ro; // error, 把只读数组赋值给普通数组也是不可以，需要类型断言
+
+  // 类型断言,可以赋值
+  a = ro as number[];
+  ```
+- readonly 与 const的使用区别： 
+  变量使用const， 属性使用readonly
+
+- 额外的属性检查
+
+```
+interface SquareConfig {
+  color?: string, // 注意这里color, 可选
+  width?: number
+}
+
+function createSquare(config：SquareConfig):{color: string, area: number} {
+  // code
+}
+
+createSquare({ coulor: 'red', width: 10 }); // 这里写的是coulor， error
+```
+
+对象字面量中coulor没有在接口类型中定义
+
+- 绕开检查
+
+  - 使用类型断言
+
+  ```
+  createSquare({ coulor: 'red', width: 10 } as SquareConfig); 
+
+  ```
+  - 索引签名（最佳）
+
+  ```
+  interface SquareConfig {
+    color?: string, // 注意这里color, 可选
+    width?: number,
+    [propName: string]: any // 带有任意数量的其他类型，只要他们不是color, width, 无所谓类型是什么
+  }
+  ```
+
+- 赋值给另外一个变量
+
+  > 接口可以描述函数类型（参数列表和函数返回类型）
+
+  ```
+  // 定义函数类型
+  interface SearchFunc {
+    (source: string, subString: string): boolean;
+  }
+
+  // 创建该函数类型变量
+  let mySearch: SearchFunc;
+
+  // 赋值
+  mySearch = function (source: string, sub: string) {
+    let result = source.search(sub);
+    return result > -1;
+  }
+
+  ```
+说明： 对于函数，形参参数名不需要和定义的类型里面一致，只需要类型一致即可，未写类型的会自动推出参数类型
+
+- 可索引类型
+
+```
+interface StringArray {
+  [index: number]: string;
+}
+
+let myArray: StringArray;
+myArray = ['bob', 'lili']
+
+let myStr: string = myArray[0];
+
+```
+
+- 索引类型有两种： 字符串和数字
+
+arr[100]的返回值要是arr['100']返回值的子类型，js内部会先把number转换为string
+
+```
+class Animal {
+  name: string;
+}
+
+class Dog extend Animal {
+  breed: string;
+}
+
+interface NotOk {
+  [x: number]: Animal;
+  [x: string]: Dog;
+}
+
+// 通过number类型的索引需要是string索引返回的子类型，这里Animal不是Dog的子类型
+```
+
+- 接口继承
+
+```
+interface Shape {
+  color: string
+}
+
+interface Square extends Shape {
+  sideLength: number
+}
+
+
+let square = <Square>{};
+square.sideLength = 3; // 自身属性
+square.color = 'red'; // 继承来的属性
+```
+
+- 继承多个接口
+```
+interface Shape1 {
+  color: string
+}
+interface Shape2 {
+  color2: string
+}
+
+interface Square extends Shape1, shape2 {
+  sideLength: number
+}
+
+```
+
+- 类的定义
+
+```
+class Greeter {
+  greeting: string; // 成员变量
+
+  constructor (msg: string) { // 构造函数
+    this.greeting = msg;
+  }
+
+  greet () {
+    return 'hello' + this.greeting;
+  }
+}
+
+let greeter = new Greeter('world');
+```
+
+- 类实现接口
+
+  ```
+    interface ClockInterface {
+      currentTime: Date;
+      setTime(d: Date);
+    }
+
+    class Clock implements ClockInterface {
+      currentTime: Date;
+      setTime(d: Date){
+
+          this.currentTime = d;
+      };
+
+      constructor (h: number, m: number) {
+
+      }
+    }
+  ```
+
+  - 存取器
+  
+  ts通过支持getters/setters来截取对对象成员的访问， 这可以有效控制访问对象成员。
+
+```
+class Employee {
+  fullName: string
+}
+
+let employee = new Employee();
+employee.fullName = 'Bob Smith'; // 可以随意设置属性
+if (employee.fullName) {
+  console.log(employee.fullName);
+}
+
+```
+```
+  // 检查用户密码是是否正确，在允许修改用户信息
+  let pwd = 'pwd';
+
+  class Employee {
+    private _fullName: string;
+
+    get fullName(): string {
+      return this._fullName;
+    }
+
+    set fullName(newName: string) {
+      if (pwd && pwd === 'pwd') {
+        this._fullName = newName;
+      } else {
+        console.log(throw new Error('pwd is incorrect so not allowed edit'))
+      }
+    }
+  }
+```
+
+注意事项：编译器输出设置为ES5或更高， 不支持降级到ES3; 只带get不带set会被推断为readonly
+
+ - 只读属性
+使用readonly设置属性， 必须在声明或构造函数里进行初始化
+
+```
+class Octopus {
+  readonly name: string; // 只读属性
+  readonly numberOfLegs: number = 8; // 声明就初始化
+  constructor (theName: string) {
+    this.name = theName; // 只读属性需要在构造函数中初始化
+  }
+}
+
+let dad = new Octopus('Man with 8 legs');
+dad.name = 'sxf'; // error， 只读
+```
+- 使用点(.)运算符访问类的静态属性
+
+- 抽象类
+
+不同于interface,abstract类可包含实现细节
 
 > 第4章： 命名空间与模块
 
