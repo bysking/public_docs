@@ -1082,7 +1082,7 @@ java -jar jsrun.jar app/run.js core/core.js -t=template/jsdoc/ -d=./out
 ``` 
 > YUIDoc
 ### 3.7 第19章 自动化测试
-> 测试工具
+> 测试工具：按需学习
 - YUI Test Selenium 引擎
     - 和Selenium一起工作（能启动浏览器并在他们内部执行命令的服务器）
 - Yeti
@@ -1105,7 +1105,7 @@ java -jar jsrun.jar app/run.js core/core.js -t=template/jsdoc/ -d=./out
 
 比如每小时构建一次项目，把所有最新更新的文件部署到集成环境中
 
-- 常用CI系统
+- 常用CI系统：具体的构建配置按需学习
   - Jenkins
     - 基于JAVA的web应用程序，用于多个版本的管理。
   - Continuum 
