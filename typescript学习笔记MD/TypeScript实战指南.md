@@ -1199,8 +1199,131 @@ dad.name = 'sxf'; // error， 只读
 
 > 第4章： 命名空间与模块
 
+- 单文件命名空间
 
-### 2. 实战篇
+```
+// a.js
+namespace A { // 命名空间A
+  export interface Person { // 命名空间外使用到这个类型需要export
+    name: string
+  }
+}
+
+// 命名空间之外
+let a: A.Person = {
+  name: '123'
+}
+```
+
+跨文件引用
+
+```
+// a.js中需要export
+export namespace A { // 命名空间A
+  export interface Person { // 命名空间外使用到这个类型需要export
+    name: string
+  }
+}
+
+// b.js中需要导入
+
+import { A } from './a';
+
+let a: A.Person = {
+  name: '123'
+}
+```
+
+- 单文件里面为命名空间起别名
+
+```
+namespace Shapes {
+  export namespace Polygon {
+    export class Triangle {}
+    export class Square {}
+  }
+}
+
+import polygon = Shapes.Polygon; // 与模块的导入区分，这里只是起别名
+let sq = new  polygon.Squares(); // 点运算符
+```
+- 模块的导入与导出
+
+export 可以导出任意类型的声明
+```
+// Validation.ts
+export interface StringValidator { // 导出类型
+  isAcceptable(s: string): boolean;
+}
+
+export const name = '123'; // 导出变量
+
+export class A implements B { // 导出类
+}
+```
+- 导出并重新命名
+```
+// 原始文件
+class A {}
+
+export { A }; // 导出类
+
+
+// 现在重命名导出
+export { A }; // 原始的需要保留，因为很大可能别的地方使用了这个名字
+export { A as newA }; // as 关键字
+```
+
+- 一个模块可以包裹多个模块，并将它们导出的类容联合在一起使用语法：export * from module
+
+- 导入
+
+导入一个模块的某个导出类容
+
+```
+import { A } from './index.js'; // A在index.js中被export
+
+let b = new A();
+```
+导入并重命名
+
+```
+import { A as AA } from './index.js'; // as关键字
+
+let b = new AA();
+```
+导入整个模块中所有的导出，放到一个变量并重命名
+
+```
+import * as Module from './index.js'; // as关键字
+
+let b = new Module.AA();
+```
+
+- 默认导出：每个模块默认，default
+
+```
+// Jquery.d.ts, 默认导出$: 默认导出的类和函数名可以省略
+declare let $: JQuery;
+export default $;
+
+// app.ts
+import $ from "JQuery"; // 导入 默认导出的$
+$('#btn').onClick(() => {
+  // code
+})
+
+// one.js
+export default 123;
+
+// test.js
+import num from './one'
+console.log(num); // 123
+```
+
+  
+
+### 2. 实战篇(待补充)
 
 > 第5章： 命令行应用实战： 天气查询
 
