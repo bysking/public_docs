@@ -1320,15 +1320,3 @@ export default 123;
 import num from './one'
 console.log(num); // 123
 ```
-
-  
-
-### 2. 实战篇(待补充)
-
-> 第5章： 命令行应用实战： 天气查询
-
-> 第6章： Express实战： 后端服务
-
-> 第9章： Vue实战: Html5网页开发
-
-> 第11章： 项目迁移与社区共建
