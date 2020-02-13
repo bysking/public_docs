@@ -172,3 +172,74 @@ singleLogin.style.display = 'none';
         console.log(calBonus(5000, 'B')); // 5000, (5000 * 1)
     
     ```
+
+> 3.代理模式
+
+- 解释： 为一个对象提供一个替代品以控制对该对象的访问
+- 简单代理：B 帮助 A 给 C 送花；
+
+```
+let Flower = function () {}; // 花
+
+let A = {
+    sendFlower: function (target) {
+        target.receiveFlower(new Flower());
+    }
+}
+
+let B = {
+    receiveFlower: function (flower) {
+        C.listenGoodMood(function () { // 心情好的时候才收花
+            C.receiveFlower(flower);
+        });
+    }
+}
+
+let C = {
+    listenGoodMood: function (fn) {
+        setTimeout(() => { // 5秒后心情变好
+            fn();
+        }, 5000)
+    },
+    receiveFlower: function (flower) {
+        console.log('收到花' + flower);
+    }
+}
+
+// 测试
+A.sendFlower(B);
+```
+
+- 虚拟代理实现图片预加载
+
+```
+    let myImage = (function () {
+        let imgNode = document.createElement('img');
+        document.body.appendChild(imgNode);
+        return {
+            setSrc: function (src) {
+                imgNode.src = src;
+            }
+        }
+    })();
+
+    let proxyImg = (function () {
+        let img = new Image();
+        img.onload = function () {
+            myImage.setSrc(this.src);
+        }
+
+        return {
+            setSrc: function (src) {
+                myImage.setSrc('loading.jpg');
+                img.src = src;
+            }
+        }
+
+    })();
+
+    // 测试
+    let src = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1581607042729&di=3b7d6396bde70b231b71eeb068f7e595&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F169a0840d14f19e572a12bc96dcfe5acefeb6eca1f85d-mnLbE1_fw658';
+    proxyImg.setSrc(src);
+
+```
