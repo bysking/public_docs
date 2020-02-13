@@ -67,3 +67,28 @@ console.log(a === b); // true
 
 - 例子：点击按钮展示悬浮窗
 
+fn负责创建对象，与管理单例的逻辑相互分离
+```
+// 管理单例的逻辑
+let Singleton = function (fn) {
+    let instance;
+    return function () {
+        return instance || (instance = fn.apply(this, arguments));
+    }
+}
+
+// 创建对象的函数
+let createLogin = function () {
+    let div = document.createElement('div');
+    div.innerHtml = '我是登录弹窗';
+    div.style.display = 'none'; // 默认隐藏
+    document.body.appendChild(div);
+    return div;
+}
+
+
+// 代码测试
+let createSingleLogin = Singleton(createLogin); // 闭包，保存了创建对象函数
+let loginLayerInstance = createSingleLogin(); // 使用的时候再创建，通过调用保存的创建函数
+singleLogin.style.display = 'none'; 
+```
