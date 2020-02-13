@@ -1,6 +1,6 @@
 # JavaScript设计模式与开发实战
 
-> 单例模式
+> 1.单例模式
 
 - 概念说明： 保证一个类仅有一个实例，并且提供一个全局访问点。
 
@@ -92,3 +92,83 @@ let createSingleLogin = Singleton(createLogin); // 闭包，保存了创建对�
 let loginLayerInstance = createSingleLogin(); // 使用的时候再创建，通过调用保存的创建函数
 singleLogin.style.display = 'none'; 
 ```
+
+
+> 2.策略模式
+
+- 定义：定义一系列算法，把他们封装起来，并且可相互替换。
+
+- 直观理解：实现某一功能有多种方式可以选择，目的是把算法的使用和算法的实现分离。
+
+- 使用策略模式设计年终奖金
+
+    模仿传统的面向对象语言的实现: 
+
+    ```
+        // 定义算法， A级别
+        function rankA = function () {};
+        rankA.prototype.calculate = function (salary) {
+            return salary * 2;
+        }
+
+        // B级别
+        function rankB = function () {};
+        rankB.prototype.calculate = function (salary) {
+            return salary * 1;
+        }
+
+        // 定义策略类
+        let Bonus = function () {
+            this.salary = null; // 工资参数
+            this.stratege = null; // 算法策略函数
+        }
+
+        // salary赋值方法
+        Bonus.prototype.setSalary = function (salary) {
+            this.salary = salary;
+        }
+
+        // stratege赋值方法
+        Bonus.prototype.setStratege = function (salary) {
+            this.stratege = stratege;
+        }
+
+        // 奖金计算: 把计算委托给策略对象
+        Bonus.prototype.getBonus = function () {
+        return this.stratege.calculate(this.salary);
+        }
+
+        // 测试: 传入不同算法策略，获得对应计算结果
+        let bonus = new Bonus();
+        bonus.setSalary(5000);
+        bonus.setStratege(new rankA());
+        console.log(bonus.getBonus()); // 5000 * 2 = 10000
+
+        bonus.setStratege(new rankB());
+        console.log(bonus.getBonus()); // 5000 * 1 = 50000
+    ```
+
+    javascript版的实现
+
+    更直接的做法是把策略定义为函数
+
+    ```
+        let strategies = {
+            'A': function (salary) {
+                return salary * 2;
+            },
+            'B': function (salary) {
+                return salary * 1;
+            },
+            // ...
+        };
+
+        let calBonus = function (salary, rank) {
+            return strategies[rank](salary);
+        }
+
+        // 测试
+        console.log(calBonus(5000, 'A')); // 10000, (5000 * 2)
+        console.log(calBonus(5000, 'B')); // 5000, (5000 * 1)
+    
+    ```
