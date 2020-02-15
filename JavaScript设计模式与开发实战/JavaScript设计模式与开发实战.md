@@ -376,7 +376,7 @@ let installEvent = function (obj, event) {
  obj.trigger('b');// 发布b事件
 ```
 
-> 5.状态模式
+> ## 5.状态模式
 
 - 说明： 区分事物内部状态，状态改变往往带来行为的改变。
 
@@ -487,7 +487,7 @@ let light = new Light();
 light.init();
 ```
 
-> 6. 装饰者模式
+> ## 6. 装饰者模式
 
 在不改变对象自身情况下，给对象动态增加职责
 
@@ -561,4 +561,69 @@ plane.fire = function () {
    fire2(); 
    decoratorAtom();
 }
+```
+> ## 7.职责链模式
+
+- 概念：使得多个对象都有机会处理请求，从而避免请求的发送者和接收者之间的耦合关系。将这些对象连成一条链，沿着它传递请求，直到有一个对象处理它。
+
+- 实例：
+
+```
+    // 老板不写代码，让经理写。
+    fubction Boss(manager) {
+        this.manager = manager;
+    };
+    Boss.prototype.coding = function (js) {
+        this.manager.write(js);
+    };
+
+    // 经理也不写代码，让程序员写
+    function Manager (coder) {
+        this.coder = coder;
+    }
+    Manager.prototype.write = function (js) {
+        this.coder.write(js);
+    }
+
+    // 程序员：让我来！
+    function Coder() {};
+    Coder.prototype.write = function (js) {
+        console.log('codding' + js)
+    }
+
+    // 测试
+    let begin = new Boss(new Manager(new Coder()));
+    begin.write('js')
+```
+> ## 8.命令模式
+
+```
+    let lian = {}; // 一个连
+
+    // 炮兵
+    lian.paobing = function (pao_num) {
+        console.log(pao_num + '炮' + '开始战斗');
+    };
+
+    // 步兵
+    lian.bubing = function (bubing_num) {
+        console.log(bubing_num + '步兵' + '开始战斗');
+    };
+
+    lian.fight = function (command) {
+        lian[command.type](command.num);
+    };
+
+    // 开始打仗: 让炮兵出动的命令
+    lian.fight({
+        type: 'paobing',
+        num: 900
+    })
+
+    // 让步兵出动的命令
+    lian.fight({
+        type: 'bubing',
+        num: 1000
+    })
+
 ```
