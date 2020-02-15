@@ -1,6 +1,6 @@
 # JavaScript设计模式与开发实战
 
-> 1.单例模式
+> ## 1.单例模式
 
 - 概念说明： 保证一个类仅有一个实例，并且提供一个全局访问点。
 
@@ -94,7 +94,7 @@ singleLogin.style.display = 'none';
 ```
 
 
-> 2.策略模式
+> ## 2.策略模式
 
 - 定义：定义一系列算法，把他们封装起来，并且可相互替换。
 
@@ -173,7 +173,7 @@ singleLogin.style.display = 'none';
     
     ```
 
-> 3.代理模式
+> ## 3.代理模式
 
 - 解释： 为一个对象提供一个替代品以控制对该对象的访问
 - 简单代理：B 帮助 A 给 C 送花；
@@ -243,3 +243,250 @@ A.sendFlower(B);
     proxyImg.setSrc(src);
 
 ```
+
+> ## 4.发布订阅模式
+
+- 定义：定义对象间的一对多的依赖关系，当一个对象的状态发生改变时，所有依赖它的对象都将得到通知。
+
+- 例子1： Dom事件
+
+```
+    document.body.addEventListener('click', function () {
+        alert('click body');
+    }, false); // 默认是false（冒泡阶段执行）true(捕获阶段产生)
+
+```
+我们无法预知用户什么时候点击，所以订阅body的点击事件，当body被点击时，body节点向订阅者发布消息
+
+- 例子2： 自定义例子
+
+1.发布者。
+2.发布者持有缓存列表，用来存放回调函数以便通知订阅者。
+3.发布消息时，发布者会遍历缓存列表，触发里面的回调函数。
+
+```
+    // 发布者
+    let Pubisher = {};
+
+    // 订阅者回调函数缓存列表
+    Pubisher.cacheList = [];
+
+    // 添加订阅者回调函数
+    Pubisher.addSubscribe = function (fn) {
+        this.cacheList.push(fn);
+    };
+
+    // 发布者发布消息
+    Pubisher.trigger = funtion () {
+        cacheList.forEach(fn => fn.apply(this, arguments));
+    }
+```
+
+上面的trigger函数中， 只要发布者发布消息，每个订阅者都会订阅到（即使这个消息不需要他们处理）。 增加一个标志key，修改如下：
+
+```
+    // 发布者
+    let Pubisher = {};
+
+    // 订阅者回调函数缓存列表,修改为对象
+    Pubisher.cacheList = {};
+
+    // 添加订阅者回调函数
+    Pubisher.addSubscribe = function (key, fn) {
+        if (!this.cacheList[key]) {
+            this.cacheList[key] = [];
+        }
+        this.cacheList[key].push(fn);
+    };
+
+    // 发布者发布消息
+    Pubisher.trigger = funtion (key) {
+
+        let key = Array.prototype.shift.call(arguments); // 取出消息类型
+        let fns = this.this.cacheList[key]; // 获取该类型回调函数列表
+
+        if (!fns || fns.length === 0) { // 未订阅此类型消息， 列表为空
+            return false;
+        }
+        fns.forEach(fn => fn.apply(this, arguments));
+    }
+
+
+```
+
+- 通用的实现思路：把发布-订阅功能提出来，然后定义一个安装函数给所有对象安装发布-订阅功能
+
+上述只能给某个具体的发布者使用。那么想要给任意对象添加发布订阅模式就需要一个通用版本。
+
+```
+// 把发布-订阅封装成一个对象
+let event = {
+    cacheList: [],
+    addSubscribe: function (key, fn) {
+        if (!this.cacheList[key]) {
+            this.cacheList[key] = [];
+        }
+        this.cacheList[key].push(fn);
+    },
+    trigger:  funtion (key) {
+        let key = Array.prototype.shift.call(arguments); // 取出消息类型
+        let fns = this.this.cacheList[key]; // 获取该类型回调函数列表
+
+        if (!fns || fns.length === 0) { // 未订阅此类型消息， 列表为空
+            return false;
+        }
+        fns.forEach(fn => fn.apply(this, arguments));
+    },
+    remove: function (key, fn) {
+        let fns = this.cacheList[key];
+        if (!fns) { // 对应key没有被人订阅
+            return false;
+        }
+        if (!fn) { // 如果没有传入具体的回调， 则取消key对应的所有事件
+            fns && fns.length = 0;
+        } else {
+            for (let i = fns.length - 1; i > 0; i--) {
+                let _fn = fns[i];
+                if (_fn === fn) {
+                    fns.splice(i, 1); // 数组里移除指定函数
+                }
+            }
+        }
+    }
+}
+
+// 定义一个安装函数
+let installEvent = function (obj, event) {
+    for (key in event) {
+        obj[key] = event[key];
+    }
+}
+
+ // 测试
+ let obj = {};
+ installEvent(obj, event);
+ obj.addSubscribe('a', function () {
+     console.log('小明订阅a事件');
+ })
+ obj.addSubscribe('b', function () {
+     console.log('小红订阅b事件');
+ })
+
+ obj.trigger('a'); // 发布a事件
+ obj.trigger('b');// 发布b事件
+```
+
+> 5.状态模式
+
+- 说明： 区分事物内部状态，状态改变往往带来行为的改变。
+
+- 例子： 电灯开关，灯开着时，按下开关，变为关闭； 灯关闭时，按下开关，变为开启。
+
+```
+let Light = function () {
+    this.state = 'off'; // 电灯初始状态
+    this.button = null; // 开关按钮
+}
+
+// 开关灯的行为
+Light.prototype.btnWasPressed = function () {
+    if (this.state === 'off') {
+        console.log('开灯')；
+        this.state = 'on';
+    } else if (this.state === 'on') {
+        console.log('关灯')；
+        this.state = 'off';
+    }
+}
+
+// 初始化事件绑定
+Light.prototype.init = function () {
+    let btn = document.creatElement('button'),
+        self = this;
+
+    button.innerHtml = '开关';
+    this.button = document.body.appendChild(btn); // 函数返回追加的节点
+    this.button.onclick = function () {
+        self.btnWasPressed();
+    }
+}
+```
+- 代码缺点
+
+1.btnWasPressed违反开闭原则
+2.状态种类不确定: 比如增加强光弱光就需要修改if-else
+3.状态切换需要堆砌if-else
+
+- 修改代码
+
+一般封装指的是封装对象行为，而不是状态，但是状态模式里面封装的是状态。
+具体做法是把每一种状态以及该状态对应的行为封装在一个类里面，事件触发时把请求委托给这个对象即可。
+
+
+1. 编写不同的灯状态类
+```
+// 弱光类
+let WeakLight = function (light) {
+    this.light = light;
+};
+WeakLight.prototype.btnWasPressed = function () {
+    console.log('弱光');
+    this.light.setState(this.light.weakState);
+}
+
+// 强光类
+let StrongLight = function (light) {
+    this.light = light;
+};
+StrongLight.prototype.btnWasPressed = function () {
+    console.log('强光');
+    this.light.setState(this.light.strongState);
+}
+
+// 关灯类
+let OffLight = function (light) {
+    this.light = light;
+};
+OffLight.prototype.btnWasPressed = function () {
+    console.log('关灯');
+    this.light.setState(this.light.offState);
+}
+
+
+```
+
+2. 改写Light类
+
+```
+let Light = function () {
+    this.offState = new OffLight(this);
+    this.strongState = new OffLight(this);
+    this.weakState = new WeakLight(this);
+    this.button = null;
+}
+
+```
+
+3. button事件绑定 
+Light.prototype.init = function () {
+    let btn = document.creatElement('button'),
+        self = this;
+
+    button.innerHtml = '开关';
+    this.button = document.body.appendChild(btn); // 函数返回追加的节点
+    this.currentState = this.offState;
+    this.button.onclick = function () { // 实际上使用了委托
+        self.currentState.btnWasPressed();
+    } 
+}
+
+5. 测试代码
+
+```
+let light = new Light();
+light.init();
+```
+
+> 6. 装饰模式
+
+给类动态增加职责
