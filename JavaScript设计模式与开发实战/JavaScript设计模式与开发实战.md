@@ -487,6 +487,78 @@ let light = new Light();
 light.init();
 ```
 
-> 6. 装饰模式
+> 6. 装饰者模式
 
-给类动态增加职责
+在不改变对象自身情况下，给对象动态增加职责
+
+- 模拟传统面向对象的装饰着模式
+
+场景： 飞机大战， 一级发射普通子弹， 二级导弹， 三级原子弹
+
+```
+let Plane = function () {};
+Plane.prototype.fire = function () {
+    console.log('发射普通子弹')；
+}
+```
+
+接下来增加两个装饰类：导弹、原子弹
+
+```
+let DecoratorMissile = function (plane) {
+    this.plane = plane'
+}
+DecoratorMissile.prototype.fire = function () {
+    this.plane.fire();
+    console.log('发射导弹');
+}
+
+let DecoratorAtom = function (plane) {
+    this.plane = plane'
+}
+DecoratorAtom.prototype.fire = function () {
+    this.plane.fire();
+    console.log('发射原子弹');
+}
+
+// 测试代码
+let plane = new Plane();
+plane.fire(); // 发射普通子弹
+
+plane = new DecoratorMissile(plane);
+plane.fire(); // 发射普通子弹以及发射导弹
+
+plane = new DecoratorAtom(plane);
+plane.fire(); // 发射普通子弹以及发射原子弹
+
+```
+- js版
+
+```
+let plane = {
+    fire: function () {
+        console.log('发射普通子弹');
+    }
+}
+
+let decoratorMissile = function () {
+    console.log('发射导弹');
+}
+
+let decoratorAtom = function () {
+    console.log('发射原子弹');
+}
+
+let fire = plane.fire; // 保存原始的函数
+
+plane.fire = function () { // 扩展函数
+   fire(); 
+   decoratorMissile();
+}
+let fire2 = plane.fire;
+
+plane.fire = function () {
+   fire2(); 
+   decoratorAtom();
+}
+```
