@@ -764,3 +764,40 @@ person.eat();
 person.walk();
 
 ```
+
+> ## 13.工厂模式
+
+用于创建同一类对象, 工程模式定义一个创建对象的接口，这个接口由子类决定实例化哪一个类，该模式是一个类的实例化延迟到了子类，子类可以重写方法以便创建的时候指定自己的对象类型。
+
+- 场景举例：系统对登录用户进行权限控制其能访问的页面。用户登录系统，系统根据用户权限创建一个用户对象User, User中保留了该用户能看到的页面， 用户其实是一类对象，包括超级管理员，管理员，普通用户。
+
+```
+//User类
+class User {
+  constructor(options) {//构造器
+    this.name = options.name;
+    this.viewPage = options.viewPage;
+  }
+
+  static getInstance(role) { //静态方法,直接调用： User.getInstance(role)
+    switch (role) {
+      case 'superAdmin':
+        return new User({ name: '超级管理员', viewPage: ['首页', '通讯录', '发现页', '应用数据', '权限管理'] });
+        break;
+      case 'admin':
+        return new User({ name: '管理员', viewPage: ['首页', '通讯录', '发现页', '应用数据'] });
+        break;
+      case 'user':
+        return new User({ name: '普通用户', viewPage: ['首页', '通讯录', '发现页'] });
+        break;
+      default:
+        throw new Error('创建用户的权限参数错误, 可选参数:superAdmin、admin、user')
+    }
+  }
+}
+
+//调用
+let superAdmin = User.getInstance('superAdmin');
+let admin = User.getInstance('admin');
+let normalUser = User.getInstance('user');
+```
