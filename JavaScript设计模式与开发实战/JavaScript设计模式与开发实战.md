@@ -627,3 +627,71 @@ plane.fire = function () {
     })
 
 ```
+
+> ## 9.中介者模式
+
+概念：用一个中介对象来封装一系列的对象交互，中介者使对象之间不需要显式相互引用，从而使其耦合松散，而且可以独立改变他们之间的交互。
+
+- 场景： 机场，飞机的起飞降落信息交互统一由塔台管理
+
+```
+// 飞机对象
+let Plane = function (name) {
+    this.name = name;
+}
+Plane.prototype.send = function (msg, to) {
+    ControlPlatform.send(msg, to);
+}
+Plane.prototype.receive = function (msg) {
+    console.log(this.name + '接受到了' + msg)
+}
+
+// 塔台
+let ControlPlatform = {
+    all: {},
+    regist: function (plane) {
+        this.all[plane.name] = plane;
+    },
+    send: function (msg, to) {
+        this.all[to.name].receive(msg);
+    }
+}
+
+// 测试代码
+let plane1 = new Plane('feiji1');
+let plane2 = new Plane('feiji2');
+
+ControlPlatform.regist(plane1);
+ControlPlatform.regist(plane2);
+
+plane1.send('200米，即将降落', plane2);
+
+
+```
+
+> ## 10.外观模式（门面模式）
+
+为子系统的一组接口提供一个一致的界面， 此模块定义了一个高层接口，这个接口使得子系统更加容易使用。
+
+外观模式可用于简化类中的接口，使得接口与调用者解耦，也可将一些复杂操作封装起来，并创建一个简单接口用于调用。
+
+外观模式每次使用时需要检测功能的可用性，会带来一定的性能问题。
+
+```
+// 改造前
+$('#btn').click(function (e){
+    e.stopPropagation();
+    e.preventDefault();
+})
+
+// 改造后
+let stopEvent = function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+}
+
+$('#btn').click(function (e){
+    stopEvent();
+})
+
+```
