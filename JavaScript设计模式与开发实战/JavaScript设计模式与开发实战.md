@@ -695,3 +695,35 @@ $('#btn').click(function (e){
 })
 
 ```
+
+> ## 11.迭代器模式
+
+提供一种方法顺序访问一个聚合对象中的各个元素， 而又不暴露该方法中的内部表示。
+
+```
+let Iterator = function(arr) {
+    let length = arr.length,
+        index = 0;
+    return {
+        hasNext: function () {
+            return index < arr.length
+        },
+        next: function () {
+            let data = arr[index];
+            index +=1;
+            return data;
+        },
+        reset: function () {
+            index = 0;
+        }
+    }
+}
+
+// 测试代码
+let arr = [1, '23', 4, 'aa'];
+let ite = new Iterator(arr);
+
+while(ite.hasNext()) {
+    console.log(ite.next());
+}
+```
