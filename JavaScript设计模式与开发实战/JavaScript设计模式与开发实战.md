@@ -727,3 +727,40 @@ while(ite.hasNext()) {
     console.log(ite.next());
 }
 ```
+
+> ## 12.适配器模式
+
+将一个对象的接口转换成另一个接口，解决由于接口不兼容而无法工作的问题
+
+```javascript
+// // 老代码
+// let Person = {
+//     eat: function() {},
+//     walk: function() {}
+// }
+
+// 代码被重构
+let Man =  function () {
+    this.eat = function () {
+        console.log('新的eat方法')
+    }
+}
+Man.prototype.walk = function () {
+    console.log('挂在原型上的walk方法')
+}
+
+// 还想使用Person.eat()怎么办？适配器改造如下
+let Person = function () {
+    let p = new Man();
+    return {
+        eat: p.eat,
+        walk: p.walk
+    }
+}
+
+// 测试代码
+let person = new Person();
+person.eat();
+person.walk();
+
+```
