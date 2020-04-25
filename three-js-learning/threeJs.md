@@ -109,8 +109,29 @@ animate();
 ```
 
 > 通过模块引入
+- npm install three
 
+```javascript
+import { Scene } from 'three';
+const scene = new Scene();
+```
+- 注意
+
+ES6版本加载器，控制器的引入需要在example/jsm/controls/OrbitControls.js
 > 浏览器支持
+- 在所有现代浏览器中，three.js可以用webGL渲染场景，如果是IE10或者更低，则需要回落到renders（CSS2DRENDERER,CSS3DRENDERER, SCGRENDERER）
+
+three.js部分特性需要使用polyfill解决兼容问题
+Typed Arrays, Web Audio API, WebVR API, Blob, Promise, Fetch, Flie API, URL API, Pointer Lock API
+
+- 建议的填充物
+1. [core-js](https://github.com/zloirock/core-js)
+2. [typedarray.js](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js)
+3. [ES6-Promise](https://github.com/stefanpenner/es6-promise/)
+4. [Blob.js](https://github.com/eligrey/Blob.js)
+5. [fetch](https://github.com/github/fetch)
+
+
 
 > WebGl兼容性检查
 
