@@ -18,23 +18,14 @@ let renderer = new THREE.WebGLRenderer();
  * param 3 false 低分辨率渲染， 需要配合wwidth/2, wheight/2, 类似于用小图进行放大
  */
 renderer.setSize(wwidth, wheight, false);
-addGeometry(sceen);
-camera.position.z = 5;
 document.body.appendChild(renderer.domElement);
+let geometry = new THREE.BoxGeometry(1, 1, 1); // 立方体对象， 顶点信息， 空间坐标
+let materail = new THREE.MeshBasicMaterial({ color: '#00ff00' }); // 材料信息
+let cube = new THREE.Mesh(geometry, materail); // 网格蒙皮
+sceen.add(cube); // 默认情况 物体会被添加到（0，0，0），使得摄像机和立方体在一起，解决方案： 摄像机外移
+camera.position.z = 5;
 
 animate();
-
-/**
- * 
- * @param {any} seen 场景实例
- * @param {Object} options 创建立方体配置
- */
-function addGeometry(seen, options) {
-    let geometry = new THREE.BoxGeometry(1, 1, 1); // 立方体对象， 顶点信息， 空间坐标
-    let materail = new THREE.MeshBasicMaterial({ color: '#00ff00' }); // 材料信息
-    let cube = new THREE.Mesh(geometry, materail); // 网格蒙皮
-    seen.add(cube); // 默认情况 物体会被添加到（0，0，0），使得摄像机和立方体在一起，解决方案： 摄像机外移
-}
 
 /**
  * 渲染循环 每次屏幕刷新时对场景进行绘制的循环-大多数屏幕60次/秒
@@ -43,5 +34,7 @@ function addGeometry(seen, options) {
 function animate() {
     requestAnimationFrame(animate);
     // 自定义操作
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
     renderer.render(sceen, camera)
 }

@@ -66,7 +66,7 @@ renderer.setSize(wwidth, wheight, false);
 document.body.appendChild(renderer.domElement);
 ```
 
-- 创建立方体 放在document.body.appendChild(renderer.domElement);前面
+- 创建立方体
 ```javascript
 /**
  * 
@@ -89,8 +89,23 @@ function addGeometry(seen, options) {
 function animate() {
     requestAnimationFrame(animate);
     // 自定义操作
+    cube.rotation.x += 0.1;
+    cube.rotation.y += 0.1;
     renderer.render(sceen, camera)
 }
+```
+- 调用测试
+```javascript
+let wwidth = window.innerWidth;
+let wheight = window.innerHeight;
+let sceen = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera(75, wwidth/wheight, 0.1, 100);
+let renderer = new THREE.WebGLRenderer();
+renderer.setSize(wwidth, wheight, false);
+document.body.appendChild(renderer.domElement);
+addGeometry(sceen);
+camera.position.z = 5;
+animate();
 ```
 
 > 通过模块引入
