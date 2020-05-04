@@ -134,10 +134,24 @@ function getConversionInfo(options) {
 		let yAngle = 0;
 
 		// z轴旋转
+		let zExpression = ((Y/y) - (X/x)) / ((x/y) + (y/x));
+		let R_Z;
+		if(x===0 && Y === 0 && X === -y) {
+			R_Z = 90 * Math.PI / 180;
+		} else if(x === 0 && Y === 0 && X === y) {
+			R_Z = 270 * Math.PI / 180;
+		} else if(y === 0 && X === 0 && Y === x) {
+			R_Z = 90 * Math.PI / 180;
+		} else if(y === 0 && X === 0 && Y === -x) {
+			R_Z = 270 * Math.PI / 180;
+		} else {
+			R_Z = Math.asin(zExpression * Math.PI / 180); // 计算绕z轴旋转角
+		}
 
 		// x
 
 		//y
+		
 
 
 		return rotateInfo;
@@ -223,3 +237,4 @@ let b = getConversionInfo(options2);
 let c = getConversionInfo(options3);
 
 console.log(a, b, c)
+console.log(Math)
