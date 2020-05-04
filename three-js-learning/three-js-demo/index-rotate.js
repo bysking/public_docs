@@ -122,21 +122,40 @@ function getConversionInfo(options) {
 	function getRotateInfo(source, target) {
 		let {x, y,z} = source;
 		let {x: X, y: Y,z: Z} = target;
+
+		// z轴旋转角
+		let R_Z = getAngle(x,y,X,Y);
+
+		// x轴旋转角
+		let R_X = getAngle(y,z,Y,Z);
+
+		// y轴旋转角
+		let R_Y = getAngle(z,x,Z,X);
+
 		let rotateInfo = {
-			x: 0,
-			y: 0,
-			z: 0
+			x: R_X,
+			y: R_Y,
+			z: R_Z
 		};
+		
+		return rotateInfo;
+	}
 
-		// 初始化旋转角度
-		let zAngle = 0;
-		let xAngle = 0;
-		let yAngle = 0;
-
+	/**
+	 * 
+	 * @param {*} x 绕轴旋转表达式右侧cos系数
+	 * @param {*} y 绕轴旋转表达式右侧-sin系数
+	 * @param {*} X xcosA-ysinA中cos系数x旋转后的对应坐标X
+	 * @param {*} Y xsinA+ycosA中cos的系数y旋转后对应的坐标
+	 */
+	function getAngle(x, y, X, Y) {
 		// z轴旋转
-		let zExpression = ((Y/y) - (X/x)) / ((x/y) + (y/x));
+		let zExpression = ((x*Y - y*X) / (x*x + y*y));
 		let R_Z;
-		if(x===0 && Y === 0 && X === -y) {
+		if(x === 0 && y === 0) {
+			return 0;
+		}
+		if(x === 0 && Y === 0 && X === -y) {
 			R_Z = 90 * Math.PI / 180;
 		} else if(x === 0 && Y === 0 && X === y) {
 			R_Z = 270 * Math.PI / 180;
@@ -146,15 +165,12 @@ function getConversionInfo(options) {
 			R_Z = 270 * Math.PI / 180;
 		} else {
 			R_Z = Math.asin(zExpression * Math.PI / 180); // 计算绕z轴旋转角
+			if(x !== X) {
+				R_Z = Math.PI; // arcsin为0有两种情况0和180, x === X时为0， 否则180
+			}
 		}
 
-		// x
-
-		//y
-		
-
-
-		return rotateInfo;
+		return R_Z * 180/Math.PI;
 	}
 
 	/**
@@ -202,12 +218,12 @@ function getConversionInfo(options) {
 let options = {
 	source: {
 		x: 3,
-		y: 4,
+		y: 0,
 		z: 0
 	},
 	target: {
-		x: 4,
-		y: 3,
+		x: 0,
+		y: -3,
 		z: 0
 	},
 	rotate: undefined
@@ -223,18 +239,16 @@ let options2 = {
 let options3 = {
 	source: {
 		x: 3,
-		y: 4,
+		y: 0,
 		z: 0
 	},
 	rotate: {
-		x:30,
-		y:30,
-		z:0,
+		x:0,
+		y:0,
+		z:90,
 	}
 }
-let a = getConversionInfo(options);
-let b = getConversionInfo(options2);
-let c = getConversionInfo(options3);
-
-console.log(a, b, c)
-console.log(Math)
+let a = getConversionInfo(options2);
+console.log(a)
+// let b = getConversionInfo(options2);
+// let c = getConversionInfo(options3);
