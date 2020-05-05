@@ -93,24 +93,29 @@ function getRotateMatrixByRandom(axios, angle, target) {
 }
 
 /**
- * 获取旋转信息函数
+ * 获取旋转信息函数 注意：屏幕向里为z轴正向
  * @param {Object} options { source: {x: 0, y: 0, z: 0}, source: {x: 0, y: 0, z: 0}, rotate: {x: 0, y: 0, z: 0}  }
  */
 function getConversionInfo(options) {
+	let result = {
+		source: options.source,
+		target: options.target,
+		rotate: options.rotate,
+	}
 	if(!options.rotate) {
 		// 求旋转信息
-		return getRotateInfo(options.source, options.target)
+		result.rotate =  getRotateInfo(options.source, options.target)
 	}
 	if(!options.source) {
 		// 求原坐标
-		console.log('求原坐标')
-		return getNewPointInfo(options.target, options.rotate, true)
+		result.source = getNewPointInfo(options.target, options.rotate, true)
 	}
 	if(!options.target) {
 		// 求旋转变换后坐标
-		console.log('求旋转变换后坐标')
-		return getNewPointInfo(options.source, options.rotate, false)
+		result.target = getNewPointInfo(options.source, options.rotate, false)
 	}
+
+	return result
 
 	/**
 	 * 获取旋转信息
@@ -120,8 +125,7 @@ function getConversionInfo(options) {
 	 */
 	function getRotateInfo(source, target) {
 		let {x, y,z} = source;
-		let {x: X, y: Y,z: Z} = target;
-		debugger
+		let {x: X, y: Y,z: Z} = target;		
 		let rotateInfo = {
 			x: 0,
 			y: 0,
@@ -302,14 +306,19 @@ let options3 = {
 	source: { // {1，-1，1}
 		x: -1,
 		y: 1,
+		z: -1
+	},
+	target: { // {1，-1，1}
+		x: 1,
+		y: -1,
 		z: 1
 	},
-	rotate: {
-		x:0,
-		y:90,
-		z:180,
-	}
+	// rotate: {
+	// 	x:0,
+	// 	y:90,
+	// 	z:180,
+	// }
 }
 
-let a = getConversionInfo(options2);
+let a = getConversionInfo(options3);
 console.log(a)
