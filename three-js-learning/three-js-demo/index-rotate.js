@@ -6,8 +6,9 @@
  * @param {Array} target 旋转矩阵数组
  */
 function getRotateMatrixByAxios(axios = 'X', angle, target) {
-	let sin = Math.sin(angle);
-	let cos = Math.cos(angle);
+	let angle_temp = angle/180*Math.PI
+	let sin = Math.sin(angle_temp);
+	let cos = Math.cos(angle_temp);
 
 	let rotateMatrixMap = {
 		'X': [ // 绕x轴旋转矩阵
@@ -31,12 +32,11 @@ function getRotateMatrixByAxios(axios = 'X', angle, target) {
 	}
 
 	target = target || new Float32Array(16);
+	// for(let i = 0; i < target.length; i++) {
+	// 	target[i] = rotateMatrixMap[axios][i]
+	// }
 
-	rotateMatrixMap[axios].forEach((item, index) => {
-		target[index] = item
-	})
-
-	return target;
+	return rotateMatrixMap[axios];
 }
 
 /**
@@ -99,7 +99,6 @@ function getRotateMatrixByRandom(axios, angle, target) {
 function getConversionInfo(options) {
 	if(!options.rotate) {
 		// 求旋转信息
-		console.log('求旋转信息')
 		return getRotateInfo(options.source, options.target)
 	}
 	if(!options.source) {
@@ -110,7 +109,7 @@ function getConversionInfo(options) {
 	if(!options.target) {
 		// 求旋转变换后坐标
 		console.log('求旋转变换后坐标')
-		return getNewPointInfo(options.target, options.rotate, false)
+		return getNewPointInfo(options.source, options.rotate, false)
 	}
 
 	/**
@@ -122,23 +121,56 @@ function getConversionInfo(options) {
 	function getRotateInfo(source, target) {
 		let {x, y,z} = source;
 		let {x: X, y: Y,z: Z} = target;
+		debugger
+		let rotateInfo = {
+			x: 0,
+			y: 0,
+			z: 0
+		};
 
 		// z轴旋转角
 		let R_Z = getAngle(x,y,X,Y);
 
+		// 判断是否到达目标点，到达直接返回，否则更新旋转后的坐标，继续判断下一轴
+		rotateInfo.z = R_Z;
+		if(!isEnd(R_Z, x, y, X, Y)) {
+			x = X; // 未到达，更新坐标点
+			y = Y
+		} else{
+			return rotateInfo
+		}
+
 		// x轴旋转角
 		let R_X = getAngle(y,z,Y,Z);
-
+		rotateInfo.x = R_X;
+		if(!isEnd(R_X, y, z, Y, Z)) {
+			z = Z; // 未到达，更新坐标点
+			y = Y
+		} else{
+			return rotateInfo
+		}
 		// y轴旋转角
 		let R_Y = getAngle(z,x,Z,X);
-
-		let rotateInfo = {
-			x: R_X,
-			y: R_Y,
-			z: R_Z
-		};
+		rotateInfo.y = R_Y;
+		if(isEnd(R_Y, z, x, Z, X)) {
+			x = X; // 未到达，更新坐标点
+			z = Z
+		} else{
+			console.log('无法旋转到达')
+			return rotateInfo
+		}
 		
 		return rotateInfo;
+	}
+
+	// 判断是否到达目标点
+	function isEnd(R_Z, x, y, X, Y) {
+		let cos = Math.cos(R_Z);
+		let sin = Math.sin(R_Z);
+		if((x*cos - y*sin) === X && (X*sin + y*cos) === Y) {
+			return true
+		}
+		return false
 	}
 
 	/**
@@ -164,13 +196,13 @@ function getConversionInfo(options) {
 		} else if(y === 0 && X === 0 && Y === -x) {
 			R_Z = 270 * Math.PI / 180;
 		} else {
-			R_Z = Math.asin(zExpression * Math.PI / 180); // 计算绕z轴旋转角
-			if(x !== X) {
+			R_Z = Math.asin(zExpression); // 计算绕z轴旋转角
+			if(R_Z === 0 && x !== X) {
 				R_Z = Math.PI; // arcsin为0有两种情况0和180, x === X时为0， 否则180
 			}
 		}
 
-		return R_Z * 180/Math.PI;
+		return R_Z * (180 / Math.PI); // 转化为角度
 	}
 
 	/**
@@ -186,15 +218,41 @@ function getConversionInfo(options) {
 			y: 0,
 			z: 0
 		} 
+		let {x, y, z} = basePoint
+		let matrix_x = getRotateMatrixByAxios('X', rotateInfo.x);
+		let matrix_y = getRotateMatrixByAxios('Y', rotateInfo.y);
+		let matrix_z = getRotateMatrixByAxios('Z', rotateInfo.z);
 
+		let res1 = multiply(matrix_y, matrix_z);
+		// 旋转矩阵叉乘求新坐标
+		let res2 = multiply(res1, matrix_x);
+
+		// 旋转矩阵叉乘的逆矩阵求原坐标
+		let res_inverse = inverse(res2);
+		let point_source = new Float32Array(4);
+		point_source[0] = x;
+		point_source[1] = y;
+		point_source[2] = z;
+		point_source[3] = 1;
+
+		let source_matrix = point_source;
+
+
+
+		let result;
 		if (isOrigin) {
 			// 求原坐标, 需要使用逆矩阵
+			result = multiplyOne(res_inverse, source_matrix)
 
 		} else {
 			// 求新坐标
+			result = multiplyOne(res2, source_matrix)
 		}
 
 		// todo 求出新的坐标
+		newPoint.x = result[0];
+		newPoint.y = result[1];
+		newPoint.z = result[2];
 
 		return newPoint;
 	}
@@ -217,38 +275,41 @@ function getConversionInfo(options) {
 
 let options = {
 	source: {
-		x: 3,
-		y: 0,
-		z: 0
+		x: -1,
+		y: 1,
+		z: 1
 	},
 	target: {
-		x: 0,
-		y: -3,
-		z: 0
+		x: 1,
+		y: -1,
+		z: -1
 	},
 	rotate: undefined
 }
 let options2 = {
-	target: {
-		x: 4,
-		y: 3,
-		z: 0
-	},
-	rotate: {}
-}
-let options3 = {
-	source: {
-		x: 3,
-		y: 0,
-		z: 0
+	target: { // -1 1 1
+		x: 1,
+		y: -1,
+		z: 1
 	},
 	rotate: {
 		x:0,
-		y:0,
-		z:90,
+		y:90,
+		z:180
 	}
 }
+let options3 = {
+	source: { // {1，-1，1}
+		x: -1,
+		y: 1,
+		z: 1
+	},
+	rotate: {
+		x:0,
+		y:90,
+		z:180,
+	}
+}
+
 let a = getConversionInfo(options2);
 console.log(a)
-// let b = getConversionInfo(options2);
-// let c = getConversionInfo(options3);
